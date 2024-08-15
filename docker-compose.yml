@@ -6,7 +6,21 @@ services:
       - "8000:8000"
     volumes:
       - ./service:/service
+    environment:
+      - DB_HOST=database
+      - DB_NAME=docker_db
+      - DB_USER=docker_db_user
+      - DB_PASS=root
 
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+
+    depends_on:
+      - database
  
+  database:
+    image: postgres:14.6-alpine3.16
+    environment:
+      - POSTGRES_DB=docker_db
+      - POSTGRES_USER=docker_db_user
+      - POSTGRES_PASSWORD=root
