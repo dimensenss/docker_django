@@ -37,7 +37,47 @@ services:
     command: -A celery_app.app worker --loglevel=info
     volumes:
       - ./service:/service
+    environment:
+      - DB_HOST=database
+      - DB_NAME=docker_db
+      - DB_USER=docker_db_user
+      - DB_PASS=root
     links:
       - redis
     depends_on:
       - redis
+      - database
+
+  worker2:
+    build:
+      context: .
+    hostname: worker2
+    entrypoint: celery
+    command: -A celery_app.app worker --loglevel=info
+    volumes:
+      - ./service:/service
+    environment:
+      - DB_HOST=database
+      - DB_NAME=docker_db
+      - DB_USER=docker_db_user
+      - DB_PASS=root
+    links:
+      - redis
+    depends_on:
+      - redis
+      - database
+
+  flower:
+    build:
+      context: .
+    hostname: flower
+    entrypoint: celery
+    command: -A celery_app.app flower --loglevel=info
+    volumes:
+      - ./service:/service
+    links:
+      - redis
+    depends_on:
+      - redis
+    ports:
+      - "5555:5555"
